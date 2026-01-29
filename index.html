@@ -478,12 +478,11 @@
 <!-- Form Column -->
 <div class="lg:col-span-2">
 <form
+  id="contactForm"
   class="bg-white dark:bg-card-dark p-8 md:p-10 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-6"
   method="POST"
   action="https://formspree.io/f/xpqrrovb"
 >
-  <input type="hidden" name="_next" value="https://h4ndr31.github.io/Allianz-Tiriac-Otopeni/#contact">
-        <input type="hidden" name="_next" value="#contact">
   <div class="grid md:grid-cols-2 gap-6">
     <div class="space-y-2">
       <label class="text-xs font-bold uppercase tracking-widest text-slate-500" for="nume">Nume</label>
@@ -498,16 +497,27 @@
     </div>
 
     <div class="space-y-2">
-      <label class="text-xs font-bold uppercase tracking-widest text-slate-500" for="email">Email</label>
+      <label class="text-xs font-bold uppercase tracking-widest text-slate-500" for="telefon">Telefon</label>
       <input
-        id="email"
-        name="email"
-        required
+        id="telefon"
+        name="telefon"
         class="w-full bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-800 rounded-xl focus:ring-primary focus:border-primary"
-        placeholder="nume@exemplu.ro"
-        type="email"
+        placeholder="07xx xxx xxx"
+        type="tel"
       />
     </div>
+  </div>
+
+  <div class="space-y-2">
+    <label class="text-xs font-bold uppercase tracking-widest text-slate-500" for="email">Email</label>
+    <input
+      id="email"
+      name="email"
+      required
+      class="w-full bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-800 rounded-xl focus:ring-primary focus:border-primary"
+      placeholder="nume@exemplu.ro"
+      type="email"
+    />
   </div>
 
   <div class="space-y-2">
@@ -528,7 +538,7 @@
     <label class="text-xs font-bold uppercase tracking-widest text-slate-500" for="mesaj">Mesaj</label>
     <textarea
       id="mesaj"
-      name="mesaj"
+      name="message"
       required
       class="w-full bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-800 rounded-xl focus:ring-primary focus:border-primary"
       placeholder="Scrie pe scurt ce ai nevoie si cum te pot ajuta."
@@ -550,10 +560,13 @@
     Trimite mesaj <span class="material-symbols-outlined">send</span>
   </button>
 
+  <p id="formStatus" class="text-sm text-slate-500 text-center hidden"></p>
+
   <p class="text-xs text-slate-500 text-center">
     Pentru urgenta, suna direct la <a class="text-primary font-bold" href="tel:+40750298002">+40 750 298 002</a>.
   </p>
 </form>
+
 </div>
 </div>
 </div>
@@ -582,8 +595,46 @@
 </div>
 </div>
 </footer>
+<script>
+  (function () {
+    const form = document.getElementById("contactForm");
+    const statusEl = document.getElementById("formStatus");
+
+    if (!form || !statusEl) return;
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      statusEl.classList.remove("hidden");
+      statusEl.textContent = "Se trimite mesajul...";
+
+      try {
+        const formData = new FormData(form);
+
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: { "Accept": "application/json" }
+        });
+
+        if (res.ok) {
+          statusEl.textContent = "Multumesc. Mesajul a fost trimis.";
+          form.reset();
+
+          const contactSection = document.getElementById("contact");
+          if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
+        } else {
+          statusEl.textContent = "Nu s-a putut trimite mesajul. Incearca din nou sau suna-ma.";
+        }
+      } catch (err) {
+        statusEl.textContent = "Eroare de retea. Incearca din nou sau suna-ma.";
+      }
+    });
+  })();
+</script>
 
 </body></html>
+
 
 
 
